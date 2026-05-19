@@ -1,6 +1,7 @@
+cat > README.md << 'EOF'
 # FHSS Trade-off Explorer
 
-Bài thực hành Labtainers khảo sát trade-off của kỹ thuật FHSS-MFSK trong giấu tin âm thanh.
+Bài thực hành Labtainers khảo sát sự thay đổi của các chỉ số PSNR, BER và Capacity theo Hop Rate và MFSK Order trong giấu tin âm thanh FHSS-MFSK.
 
 ---
 
@@ -8,12 +9,13 @@ Bài thực hành Labtainers khảo sát trade-off của kỹ thuật FHSS-MFSK 
 
 Sinh viên sẽ:
 
-- Tự tạo nhiều cấu hình FHSS khác nhau
-- Quan sát phổ tín hiệu bằng Sonic Visualiser
+- Tự tạo các cấu hình FHSS-MFSK khác nhau
+- Quan sát phổ tín hiệu qua ảnh spectrogram trong báo cáo HTML
+- Có thể mở Sonic Visualiser để quan sát trực tiếp nếu môi trường X11 hỗ trợ
 - So sánh chất lượng giữa các cấu hình
 - Phân tích trade-off giữa:
-  - BER
   - PSNR
+  - BER
   - Capacity
 - Chọn cấu hình phù hợp cho từng kịch bản ứng dụng thực tế
 
@@ -23,17 +25,17 @@ Sinh viên sẽ:
 
 Bài lab khảo sát các tham số:
 
-- FHSS hop rate — tốc độ nhảy tần
-- MFSK order `m` — số mức tần số
-- PSNR — mức độ biến dạng âm thanh
-- BER — tỷ lệ lỗi bit
-- Capacity — dung lượng nhúng dữ liệu
+- Hop Rate: tốc độ nhảy tần của chuỗi FHSS
+- MFSK Order `m`: số mức tần số dùng để biểu diễn dữ liệu
+- PSNR: mức độ biến dạng âm thanh sau khi nhúng tin
+- BER: tỷ lệ lỗi bit sau khi trích xuất
+- Capacity: dung lượng nhúng dữ liệu
 
-Đồng thời đánh giá các cấu hình theo:
+Bài lab đánh giá các cấu hình theo 3 kịch bản:
 
-- Military communication
-- VoIP hidden channel
-- Radio watermarking
+- Military communication: ưu tiên BER thấp
+- VoIP hidden channel: ưu tiên Capacity cao
+- Radio watermarking: cân bằng PSNR, BER và Capacity
 
 ---
 
@@ -57,69 +59,69 @@ labtainer fhss-tradeoff-explorer
 
 # Các nhiệm vụ
 
-## Task 1 — Baseline Configuration
-
-Tạo cấu hình FHSS cơ sở:
+## Task 1 - Tạo cấu hình baseline
 
 ```bash
 python3 generate_one.py --hop 1 --m 2
 ```
 
+Cấu hình này dùng Hop Rate thấp và MFSK bậc 2 để làm mốc so sánh.
+
 ---
 
-## Task 2 — Spectrum Observation
+## Task 2 - Quan sát phổ baseline
 
-Quan sát phổ tín hiệu baseline:
+Nếu Sonic Visualiser mở được:
 
 ```bash
 sonic-visualiser stego_hop1_m2.wav &
 ```
 
+Nếu môi trường X11 không hỗ trợ Sonic, sinh viên quan sát phổ trong `report.html` sau Task 7.
+
 ---
 
-## Task 3 — Fast Hop Configuration
-
-Tạo cấu hình nhảy tần nhanh:
+## Task 3 - Tạo cấu hình hop nhanh
 
 ```bash
 python3 generate_one.py --hop 5 --m 2
 ```
 
+Cấu hình này giữ `m = 2` nhưng tăng Hop Rate để quan sát ảnh hưởng của tốc độ nhảy tần.
+
 ---
 
-## Task 4 — Fast Hop Spectrum
-
-Quan sát phổ tín hiệu hop nhanh:
+## Task 4 - Quan sát phổ hop nhanh
 
 ```bash
 sonic-visualiser stego_hop5_m2.wav &
 ```
 
+Nếu Sonic lỗi do X11, quan sát ảnh `spec_hop5_m2.png` trong `report.html`.
+
 ---
 
-## Task 5 — High-order MFSK
-
-Tạo cấu hình MFSK với `m = 8`:
+## Task 5 - Tạo cấu hình MFSK bậc cao
 
 ```bash
 python3 generate_one.py --hop 1 --m 8
 ```
 
+Cấu hình này giữ Hop Rate thấp nhưng tăng `m = 8` để khảo sát ảnh hưởng của MFSK Order tới Capacity.
+
 ---
 
-## Task 6 — MFSK Spectrum Analysis
-
-Quan sát phổ tín hiệu MFSK:
+## Task 6 - Quan sát phổ MFSK
 
 ```bash
 sonic-visualiser stego_hop1_m8.wav &
 ```
 
+Nếu Sonic lỗi do X11, quan sát ảnh `spec_hop1_m8.png` trong `report.html`.
+
 ---
 
-## Task 7 — Generate Full Trade-off Grid
-
-Sinh toàn bộ grid 9 cấu hình:
+## Task 7 - Sinh grid 9 cấu hình và báo cáo HTML
 
 ```bash
 python3 generate_grid.py
@@ -127,11 +129,16 @@ python3 generate_grid.py
 python3 build_report.py
 ```
 
+Lệnh này sinh:
+
+- 9 file audio stego
+- 9 ảnh spectrogram
+- `data.json`
+- `report.html`
+
 ---
 
-## Task 8 — Interactive Quiz
-
-Khởi chạy quiz:
+## Task 8 - Trả lời quiz tương tác
 
 ```bash
 python3 quiz_server.py &
@@ -141,15 +148,13 @@ firefox report.html &
 
 ### Đáp án kiểm thử
 
-- Q1 → B
-- Q2 → C
-- Q3 → C
+- Q1: B
+- Q2: C
+- Q3: C
 
 ---
 
-## Task 9 — Final Summary
-
-Tổng kết kết quả:
+## Task 9 - Tổng kết
 
 ```bash
 python3 summary.py
@@ -157,19 +162,45 @@ python3 summary.py
 
 ---
 
+# Ghi chú về Sonic Visualiser
+
+Sonic Visualiser là công cụ GUI nên phụ thuộc cấu hình X11 của Labtainer/VM.
+
+Nếu gặp lỗi:
+
+```text
+qt.qpa.xcb: could not connect to display :0
+```
+
+có thể xử lý trên host bằng:
+
+```bash
+cd ~/labtainer/trunk/scripts/labtainer-student
+
+stoplab
+
+xhost +local:
+
+labtainer fhss-tradeoff-explorer
+```
+
+Nếu vẫn lỗi, sinh viên có thể dùng `report.html` để quan sát spectrogram thay thế.
+
+---
+
 # Ý nghĩa bài lab
 
 Bài lab cho thấy:
 
-> Không tồn tại một cấu hình FHSS tối ưu cho mọi trường hợp.
+> Không tồn tại một cấu hình FHSS-MFSK tối ưu cho mọi trường hợp.
 
-Sinh viên cần lựa chọn tham số dựa trên mục tiêu thực tế:
+Sinh viên cần lựa chọn tham số theo mục tiêu thực tế:
 
 | Kịch bản | Ưu tiên |
 |---|---|
 | Military communication | BER thấp |
 | VoIP hidden channel | Capacity cao |
-| Radio watermark | Cân bằng PSNR / BER / Capacity |
+| Radio watermarking | Cân bằng PSNR / BER / Capacity |
 
 ---
 
@@ -177,21 +208,20 @@ Sinh viên cần lựa chọn tham số dựa trên mục tiêu thực tế:
 
 - Python 3
 - NumPy
-- SciPy
 - Sonic Visualiser
-- Matplotlib
+- Firefox
+- Labtainers
 
 ---
 
 # Kiến thức đạt được
 
-- Frequency Hopping Spread Spectrum (FHSS)
+- Frequency Hopping Spread Spectrum
 - MFSK modulation
 - Audio steganography
-- Trade-off analysis
-- Signal robustness
 - Spectrum analysis
-- BER vs PSNR optimization
+- Trade-off giữa PSNR, BER và Capacity
+- Lựa chọn cấu hình theo kịch bản ứng dụng
 
 ---
 
@@ -200,6 +230,7 @@ Sinh viên cần lựa chọn tham số dựa trên mục tiêu thực tế:
 - Họ tên: **Trương Gia Bách**
 - Mã sinh viên: **B22DCAT024**
 - Lớp: **D22CQAT04-B**
-- Học phần: **INT14102 – Kỹ thuật ẩn**
+- Học phần: **INT14102 - Kỹ thuật ẩn**
 - Giảng viên hướng dẫn: **PGS.TS. Đỗ Xuân Chợ**
 
+EOF
